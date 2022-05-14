@@ -6,6 +6,7 @@ mod framebuffer;
 mod display;
 mod model;
 mod vector;
+mod text;
 
 use core::u8;
 
@@ -19,10 +20,16 @@ use hal::clocks::Clock;
 use hal::pac;
 use embedded_hal::digital::v2::OutputPin;
 use embedded_time::rate::*;
+use embedded_time::duration::*;
+use embedded_time::clock;
+use embedded_time::Instant;
+use embedded_time::Timer;
 use embedded_time::fixed_point::FixedPoint;
 use display_interface_spi::SPIInterfaceNoCS;
 use crate::vector::Vec2D;
 use crate::pixel_ops::colors;
+use crate::text::print_text;
+use core::time;
 
 #[link_section = ".boot2"]
 #[used]
@@ -123,6 +130,12 @@ fn main() -> !
 		draw_line(&mut framebuffer, &Vec2D{x: 0.0f32, y: 0.0f32}, &rot_triangle.points[1], colors::GREEN as u8);
 		draw_line(&mut framebuffer, &Vec2D{x: 0.0f32, y: 0.0f32}, &rot_triangle.points[2], colors::BLUE as u8);
 
+		print_text(&mut framebuffer, b"ANCIENT", Vec2D{x: 30.0f32, y: 30.0f32}, scale * 30.0f32, colors::WHITE as u8);
+		print_text(&mut framebuffer, b"RUNES", Vec2D{x: 30.0f32, y: scale * 30.0f32 + 30.0f32}, scale * 30.0f32, colors::WHITE as u8);
+		// print_text(&mut framebuffer, b"QRSTUVWXYZ", Vec2D{x: 30.0f32, y: scale * 30.0f32 * 2.0f32 + 30.0f32}, scale * 30.0f32, colors::WHITE as u8);
+		// print_text(&mut framebuffer, b"0123456789", Vec2D{x: 30.0f32, y: scale * 30.0f32 * 3.0f32 + 30.0f32}, scale * 30.0f32, colors::WHITE as u8);
+
+
 		// misc.
 		if y_offset >= 320
 		{
@@ -138,11 +151,13 @@ fn main() -> !
 		degrees += 0.025f32;
 		y_offset += 4;
 
-		scale = libm::sin(degrees as f64) as f32 * 1.5f32;
+		scale = libm::sin(degrees as f64 * 3.0f64) as f32 * 1.5f32;
 
 		scale *= scale;
 		scale += 1.0f32;
 		scale /= 2.0f32;
+
+		scale = 0.65f32;
 
 		// if scale < 0.0f32
 		// {
