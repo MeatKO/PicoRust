@@ -1,12 +1,12 @@
-use crate::{vector::Vec2D, framebuffer::{draw_line, draw_pixel}};
+use crate::{vector::vec2f, framebuffer::{draw_line, draw_pixel}};
 use crate::pixel_ops::colors;
 
-// Letters are represented as lines, pairs of Vec2Ds
+// Letters are represented as lines, pairs of vec2fs
 
 #[derive(Clone, Copy)]
 pub struct Letter
 {
-	pub points: [Vec2D; 10],
+	pub points: [vec2f; 10],
 	pub line_count: usize
 }
 
@@ -24,7 +24,7 @@ impl Letter
 		out_letter
 	}
 
-	pub fn translate(&self, trans_vec: Vec2D) -> Letter
+	pub fn translate(&self, trans_vec: vec2f) -> Letter
 	{
 		let mut out_letter = self.clone();
 
@@ -61,22 +61,12 @@ impl Letter
 	}
 }
 
-pub fn print_text(framebuffer: &mut [u8], str_in: &[u8], trans_vec: Vec2D, scale: f32, color: u8)
+pub fn print_text(framebuffer: &mut [u8], str_in: &[u8], trans_vec: vec2f, scale: f32, color: u8)
 {
 	let mut counter: f32 = 0.0f32;
 	for char in str_in
 	{
-		if *char == 65u8
-		{
-			draw_pixel(framebuffer, 100, 20, colors::GREEN as u8);
-		}
-		else 
-		{
-			draw_pixel(framebuffer, 100, 20, colors::RED as u8);
-		}
-
-		//let current_letter = get_letter_for_char(char).scale(scale).translate(&trans_vec + &Vec2D { x: counter * scale, y: 0.0f32 });
-		let current_letter = get_letter_for_char(char).flip_y().scale(scale * 0.8).translate(&trans_vec + &Vec2D { x: counter * scale, y: 0.0f32 });
+		let current_letter = get_letter_for_char(char).flip_y().scale(scale * 0.8).translate(&trans_vec + &vec2f { x: counter * scale, y: 0.0f32 });
 
 		for i in 0..current_letter.line_count
 		{
@@ -90,143 +80,128 @@ pub fn print_text(framebuffer: &mut [u8], str_in: &[u8], trans_vec: Vec2D, scale
 fn get_letter_for_char(char: &u8) -> Letter
 {
 	match char{
-		0u8..=47u8 => Letter{ points: [Vec2D{x: 0.0f32, y: 0.0f32},Vec2D{x: 0.0f32, y: 0.0f32},Vec2D{x: 0.0f32, y: 0.0f32},Vec2D{x: 0.0f32, y: 0.0f32},Vec2D{x: 0.0f32, y: 0.0f32},
-					Vec2D{x: 0.0f32, y: 0.0f32},Vec2D{x: 0.0f32, y: 0.0f32},Vec2D{x: 0.0f32, y: 0.0f32},Vec2D{x: 0.0f32, y: 0.0f32},Vec2D{x: 0.0f32, y: 0.0f32},], line_count: 0},
-		58..=64 => Letter{ points: [Vec2D{x: 0.0f32, y: 0.0f32},Vec2D{x: 0.0f32, y: 0.0f32},Vec2D{x: 0.0f32, y: 0.0f32},Vec2D{x: 0.0f32, y: 0.0f32},Vec2D{x: 0.0f32, y: 0.0f32},
-					Vec2D{x: 0.0f32, y: 0.0f32},Vec2D{x: 0.0f32, y: 0.0f32},Vec2D{x: 0.0f32, y: 0.0f32},Vec2D{x: 0.0f32, y: 0.0f32},Vec2D{x: 0.0f32, y: 0.0f32},], line_count: 0},
-		91..=127 => Letter{ points: [Vec2D{x: 0.0f32, y: 0.0f32},Vec2D{x: 0.0f32, y: 0.0f32},Vec2D{x: 0.0f32, y: 0.0f32},Vec2D{x: 0.0f32, y: 0.0f32},Vec2D{x: 0.0f32, y: 0.0f32},
-					Vec2D{x: 0.0f32, y: 0.0f32},Vec2D{x: 0.0f32, y: 0.0f32},Vec2D{x: 0.0f32, y: 0.0f32},Vec2D{x: 0.0f32, y: 0.0f32},Vec2D{x: 0.0f32, y: 0.0f32},], line_count: 0},
+		0u8..=47u8 => Letter{ points: [vec2f{x: 0.0f32, y: 0.0f32},vec2f{x: 0.0f32, y: 0.0f32},vec2f{x: 0.0f32, y: 0.0f32},vec2f{x: 0.0f32, y: 0.0f32},vec2f{x: 0.0f32, y: 0.0f32},
+					vec2f{x: 0.0f32, y: 0.0f32},vec2f{x: 0.0f32, y: 0.0f32},vec2f{x: 0.0f32, y: 0.0f32},vec2f{x: 0.0f32, y: 0.0f32},vec2f{x: 0.0f32, y: 0.0f32},], line_count: 0},
+		58..=64 => Letter{ points: [vec2f{x: 0.0f32, y: 0.0f32},vec2f{x: 0.0f32, y: 0.0f32},vec2f{x: 0.0f32, y: 0.0f32},vec2f{x: 0.0f32, y: 0.0f32},vec2f{x: 0.0f32, y: 0.0f32},
+					vec2f{x: 0.0f32, y: 0.0f32},vec2f{x: 0.0f32, y: 0.0f32},vec2f{x: 0.0f32, y: 0.0f32},vec2f{x: 0.0f32, y: 0.0f32},vec2f{x: 0.0f32, y: 0.0f32},], line_count: 0},
+		91..=127 => Letter{ points: [vec2f{x: 0.0f32, y: 0.0f32},vec2f{x: 0.0f32, y: 0.0f32},vec2f{x: 0.0f32, y: 0.0f32},vec2f{x: 0.0f32, y: 0.0f32},vec2f{x: 0.0f32, y: 0.0f32},
+					vec2f{x: 0.0f32, y: 0.0f32},vec2f{x: 0.0f32, y: 0.0f32},vec2f{x: 0.0f32, y: 0.0f32},vec2f{x: 0.0f32, y: 0.0f32},vec2f{x: 0.0f32, y: 0.0f32},], line_count: 0},
 		// 0
-		48 => Letter{ points: [Vec2D{x: 0.0f32, y: 0.5f32},Vec2D{x: 0.5f32, y: 1.0f32},		Vec2D{x: 0.5f32, y: 1.0f32},Vec2D{x: 1.0f32, y: 0.5f32},		Vec2D{x: 1.0f32, y: 0.5f32},
-					Vec2D{x: 0.5f32, y: 0.0f32},		Vec2D{x: 0.5f32, y: 0.0f32},Vec2D{x: 0.0f32, y: 0.5f32},		Vec2D{x: 1.0f32, y: 0.25f32},Vec2D{x: 0.0f32, y: 0.0f32},], line_count: 4},
+		48 => Letter{ points: [vec2f{x: 0.0f32, y: 0.5f32},vec2f{x: 0.5f32, y: 1.0f32},		vec2f{x: 0.5f32, y: 1.0f32},vec2f{x: 1.0f32, y: 0.5f32},		vec2f{x: 1.0f32, y: 0.5f32},
+					vec2f{x: 0.5f32, y: 0.0f32},		vec2f{x: 0.5f32, y: 0.0f32},vec2f{x: 0.0f32, y: 0.5f32},		vec2f{x: 1.0f32, y: 0.25f32},vec2f{x: 0.0f32, y: 0.0f32},], line_count: 4},
 		// 1
-		49 => Letter{ points: [Vec2D{x: 0.5f32, y: 0.0f32},Vec2D{x: 0.5f32, y: 1.0f32},		Vec2D{x: 0.0f32, y: 0.5f32},Vec2D{x: 1.0f32, y: 0.5f32},		Vec2D{x: 1.0f32, y: 1.0f32},
-					Vec2D{x: 1.0f32, y: 0.0f32},		Vec2D{x: 0.0f32, y: 0.0f32},Vec2D{x: 1.0f32, y: 0.0f32},		Vec2D{x: 1.0f32, y: 0.25f32},Vec2D{x: 0.0f32, y: 0.0f32},], line_count: 1},
+		49 => Letter{ points: [vec2f{x: 0.5f32, y: 0.0f32},vec2f{x: 0.5f32, y: 1.0f32},		vec2f{x: 0.0f32, y: 0.5f32},vec2f{x: 1.0f32, y: 0.5f32},		vec2f{x: 1.0f32, y: 1.0f32},
+					vec2f{x: 1.0f32, y: 0.0f32},		vec2f{x: 0.0f32, y: 0.0f32},vec2f{x: 1.0f32, y: 0.0f32},		vec2f{x: 1.0f32, y: 0.25f32},vec2f{x: 0.0f32, y: 0.0f32},], line_count: 1},
 		// 2
-		50 => Letter{ points: [Vec2D{x: 0.0f32, y: 1.0f32},Vec2D{x: 1.0f32, y: 0.75f32},		Vec2D{x: 0.0f32, y: 0.0f32},Vec2D{x: 1.0f32, y: 0.75f32},		Vec2D{x: 0.0f32, y: 0.0f32},
-					Vec2D{x: 1.0f32, y: 0.0f32},		Vec2D{x: 1.0f32, y: 0.0f32},Vec2D{x: 1.0f32, y: 1.0f32},		Vec2D{x: 1.0f32, y: 0.25f32},Vec2D{x: 1.0f32, y: 1.0f32},], line_count: 3},
+		50 => Letter{ points: [vec2f{x: 0.0f32, y: 1.0f32},vec2f{x: 1.0f32, y: 0.75f32},	vec2f{x: 0.0f32, y: 0.0f32},vec2f{x: 1.0f32, y: 0.75f32},		vec2f{x: 0.0f32, y: 0.0f32},
+					vec2f{x: 1.0f32, y: 0.0f32},		vec2f{x: 1.0f32, y: 0.0f32},vec2f{x: 1.0f32, y: 1.0f32},		vec2f{x: 1.0f32, y: 0.25f32},vec2f{x: 1.0f32, y: 1.0f32},], line_count: 3},
 		// 3
-		51 => Letter{ points: [Vec2D{x: 0.0f32, y: 1.0f32},Vec2D{x: 1.0f32, y: 0.75f32},		Vec2D{x: 1.0f32, y: 0.75f32},Vec2D{x: 0.0f32, y: 0.5f32},		Vec2D{x: 0.0f32, y: 0.5f32},
-					Vec2D{x: 1.0f32, y: 0.25f32},		Vec2D{x: 1.0f32, y: 0.25f32},Vec2D{x: 0.0f32, y: 0.0f32},Vec2D{x: 0.0f32, y: 0.0f32},Vec2D{x: 0.0f32, y: 1.0f32}], line_count: 4},
+		51 => Letter{ points: [vec2f{x: 0.0f32, y: 1.0f32},vec2f{x: 1.0f32, y: 0.75f32},	vec2f{x: 1.0f32, y: 0.75f32},vec2f{x: 0.0f32, y: 0.5f32},		vec2f{x: 0.0f32, y: 0.5f32},
+					vec2f{x: 1.0f32, y: 0.25f32},		vec2f{x: 1.0f32, y: 0.25f32},vec2f{x: 0.0f32, y: 0.0f32},vec2f{x: 0.0f32, y: 0.0f32},vec2f{x: 0.0f32, y: 1.0f32}], line_count: 4},
 		// 4
-		52 => Letter{ points: [Vec2D{x: 0.25f32, y: 1.0f32},Vec2D{x: 0.0f32, y: 0.5f32},		Vec2D{x: 0.0f32, y: 0.5f32},Vec2D{x: 1.0f32, y: 0.5f32},		Vec2D{x: 1.0f32, y: 1.0f32},
-					Vec2D{x: 1.0f32, y: 0.0f32},		Vec2D{x: 1.0f32, y: 0.25f32},Vec2D{x: 0.0f32, y: 0.0f32},Vec2D{x: 0.0f32, y: 0.0f32},Vec2D{x: 0.0f32, y: 1.0f32}], line_count: 3},
+		52 => Letter{ points: [vec2f{x: 0.25f32, y: 1.0f32},vec2f{x: 0.0f32, y: 0.5f32},	vec2f{x: 0.0f32, y: 0.5f32},vec2f{x: 1.0f32, y: 0.5f32},		vec2f{x: 1.0f32, y: 1.0f32},
+					vec2f{x: 1.0f32, y: 0.0f32},		vec2f{x: 1.0f32, y: 0.25f32},vec2f{x: 0.0f32, y: 0.0f32},vec2f{x: 0.0f32, y: 0.0f32},vec2f{x: 0.0f32, y: 1.0f32}], line_count: 3},
 		// 5
-		53 => Letter{ points: [Vec2D{x: 1.0f32, y: 1.0f32},Vec2D{x: 0.0f32, y: 1.0f32},		Vec2D{x: 0.0f32, y: 1.0f32},Vec2D{x: 1.0f32, y: 0.5f32},		Vec2D{x: 1.0f32, y: 0.5f32},
-					Vec2D{x: 0.0f32, y: 0.0f32},		Vec2D{x: 1.0f32, y: 0.25f32},Vec2D{x: 0.0f32, y: 0.0f32},Vec2D{x: 0.0f32, y: 0.0f32},Vec2D{x: 0.0f32, y: 1.0f32}], line_count: 3},
+		53 => Letter{ points: [vec2f{x: 1.0f32, y: 1.0f32},vec2f{x: 0.0f32, y: 1.0f32},		vec2f{x: 0.0f32, y: 1.0f32},vec2f{x: 1.0f32, y: 0.5f32},		vec2f{x: 1.0f32, y: 0.5f32},
+					vec2f{x: 0.0f32, y: 0.0f32},		vec2f{x: 1.0f32, y: 0.25f32},vec2f{x: 0.0f32, y: 0.0f32},vec2f{x: 0.0f32, y: 0.0f32},vec2f{x: 0.0f32, y: 1.0f32}], line_count: 3},
 		// 6
-		54 => Letter{ points: [Vec2D{x: 1.0f32, y: 1.0f32},Vec2D{x: 0.0f32, y: 0.0f32},		Vec2D{x: 0.0f32, y: 0.0f32},Vec2D{x: 1.0f32, y: 0.0f32},		Vec2D{x: 1.0f32, y: 0.0f32},
-					Vec2D{x: 0.5f32, y: 0.5f32},		Vec2D{x: 1.0f32, y: 0.25f32},Vec2D{x: 0.0f32, y: 0.0f32},Vec2D{x: 0.0f32, y: 0.0f32},Vec2D{x: 0.0f32, y: 1.0f32}], line_count: 3},
+		54 => Letter{ points: [vec2f{x: 1.0f32, y: 1.0f32},vec2f{x: 0.0f32, y: 0.0f32},		vec2f{x: 0.0f32, y: 0.0f32},vec2f{x: 1.0f32, y: 0.0f32},		vec2f{x: 1.0f32, y: 0.0f32},
+					vec2f{x: 0.5f32, y: 0.5f32},		vec2f{x: 1.0f32, y: 0.25f32},vec2f{x: 0.0f32, y: 0.0f32},vec2f{x: 0.0f32, y: 0.0f32},vec2f{x: 0.0f32, y: 1.0f32}], line_count: 3},
 		// 7
-		54 => Letter{ points: [Vec2D{x: 1.0f32, y: 1.0f32},Vec2D{x: 0.0f32, y: 1.0f32},		Vec2D{x: 1.0f32, y: 1.0f32},Vec2D{x: 0.0f32, y: 0.0f32},		Vec2D{x: 1.0f32, y: 0.0f32},
-					Vec2D{x: 0.5f32, y: 0.5f32},		Vec2D{x: 1.0f32, y: 0.25f32},Vec2D{x: 0.0f32, y: 0.0f32},Vec2D{x: 0.0f32, y: 0.0f32},Vec2D{x: 0.0f32, y: 1.0f32}], line_count: 2},
+		54 => Letter{ points: [vec2f{x: 1.0f32, y: 1.0f32},vec2f{x: 0.0f32, y: 1.0f32},		vec2f{x: 1.0f32, y: 1.0f32},vec2f{x: 0.0f32, y: 0.0f32},		vec2f{x: 1.0f32, y: 0.0f32},
+					vec2f{x: 0.5f32, y: 0.5f32},		vec2f{x: 1.0f32, y: 0.25f32},vec2f{x: 0.0f32, y: 0.0f32},vec2f{x: 0.0f32, y: 0.0f32},vec2f{x: 0.0f32, y: 1.0f32}], line_count: 2},
 		// 8
-		55 => Letter{ points: [Vec2D{x: 0.0f32, y: 1.0f32},Vec2D{x: 1.0f32, y: 0.0f32},		Vec2D{x: 0.0f32, y: 0.0f32},Vec2D{x: 1.0f32, y: 1.0f32},		Vec2D{x: 0.0f32, y: 1.0f32},
-					Vec2D{x: 1.0f32, y: 1.0f32},		Vec2D{x: 0.0f32, y: 0.0f32},Vec2D{x: 1.0f32, y: 0.0f32},		Vec2D{x: 1.0f32, y: 0.25f32},Vec2D{x: 1.0f32, y: 1.0f32},], line_count: 4},
+		55 => Letter{ points: [vec2f{x: 0.0f32, y: 1.0f32},vec2f{x: 1.0f32, y: 0.0f32},		vec2f{x: 0.0f32, y: 0.0f32},vec2f{x: 1.0f32, y: 1.0f32},		vec2f{x: 0.0f32, y: 1.0f32},
+					vec2f{x: 1.0f32, y: 1.0f32},		vec2f{x: 0.0f32, y: 0.0f32},vec2f{x: 1.0f32, y: 0.0f32},		vec2f{x: 1.0f32, y: 0.25f32},vec2f{x: 1.0f32, y: 1.0f32},], line_count: 4},
 		// 9
-		56 => Letter{ points: [Vec2D{x: 0.0f32, y: 1.0f32},Vec2D{x: 1.0f32, y: 1.0f32},		Vec2D{x: 0.0f32, y: 0.0f32},Vec2D{x: 1.0f32, y: 1.0f32},		Vec2D{x: 0.0f32, y: 1.0f32},
-					Vec2D{x: 0.5f32, y: 0.5f32},		Vec2D{x: 1.0f32, y: 1.0f32},Vec2D{x: 1.0f32, y: 1.0f32},		Vec2D{x: 1.0f32, y: 0.25f32},Vec2D{x: 1.0f32, y: 1.0f32},], line_count: 3},
+		56 => Letter{ points: [vec2f{x: 0.0f32, y: 1.0f32},vec2f{x: 1.0f32, y: 1.0f32},		vec2f{x: 0.0f32, y: 0.0f32},vec2f{x: 1.0f32, y: 1.0f32},		vec2f{x: 0.0f32, y: 1.0f32},
+					vec2f{x: 0.5f32, y: 0.5f32},		vec2f{x: 1.0f32, y: 1.0f32},vec2f{x: 1.0f32, y: 1.0f32},		vec2f{x: 1.0f32, y: 0.25f32},vec2f{x: 1.0f32, y: 1.0f32},], line_count: 3},
 
 
 
 		// A
-		65 => Letter{ points: [Vec2D{x: 0.0f32, y: 0.0f32},Vec2D{x: 1.0f32, y: 1.0f32},		Vec2D{x: 1.0f32, y: 1.0f32},Vec2D{x: 1.0f32, y: 0.0f32},		Vec2D{x: 0.0f32, y: 0.5f32},
-					Vec2D{x: 1.0f32, y: 0.5f32},		Vec2D{x: 0.0f32, y: 0.0f32},Vec2D{x: 0.0f32, y: 0.0f32},		Vec2D{x: 0.0f32, y: 0.0f32},Vec2D{x: 0.0f32, y: 0.0f32},], line_count: 3},
+		65 => Letter{ points: [vec2f{x: 0.0f32, y: 0.0f32},vec2f{x: 1.0f32, y: 1.0f32},		vec2f{x: 1.0f32, y: 1.0f32},vec2f{x: 1.0f32, y: 0.0f32},		vec2f{x: 0.0f32, y: 0.5f32},
+					vec2f{x: 1.0f32, y: 0.5f32},		vec2f{x: 0.0f32, y: 0.0f32},vec2f{x: 0.0f32, y: 0.0f32},		vec2f{x: 0.0f32, y: 0.0f32},vec2f{x: 0.0f32, y: 0.0f32},], line_count: 3},
 		// B
-		66 => Letter{ points: [Vec2D{x: 0.0f32, y: 0.0f32},Vec2D{x: 0.0f32, y: 1.0f32},		Vec2D{x: 0.0f32, y: 1.0f32},Vec2D{x: 1.0f32, y: 0.75f32},		Vec2D{x: 1.0f32, y: 0.75f32},
-					Vec2D{x: 0.0f32, y: 0.5f32},		Vec2D{x: 0.0f32, y: 0.5f32},Vec2D{x: 1.0f32, y: 0.25f32},		Vec2D{x: 1.0f32, y: 0.25f32},Vec2D{x: 0.0f32, y: 0.0f32},], line_count: 5},
+		66 => Letter{ points: [vec2f{x: 0.0f32, y: 0.0f32},vec2f{x: 0.0f32, y: 1.0f32},		vec2f{x: 0.0f32, y: 1.0f32},vec2f{x: 1.0f32, y: 0.75f32},		vec2f{x: 1.0f32, y: 0.75f32},
+					vec2f{x: 0.0f32, y: 0.5f32},		vec2f{x: 0.0f32, y: 0.5f32},vec2f{x: 1.0f32, y: 0.25f32},		vec2f{x: 1.0f32, y: 0.25f32},vec2f{x: 0.0f32, y: 0.0f32},], line_count: 5},
 		// C
-		67 => Letter{ points: [Vec2D{x: 0.0f32, y: 0.5f32},Vec2D{x: 1.0f32, y: 1.0f32},		Vec2D{x: 0.0f32, y: 0.5f32},Vec2D{x: 1.0f32, y: 0.0f32},		Vec2D{x: 1.0f32, y: 0.75f32},
-					Vec2D{x: 0.0f32, y: 0.5f32},		Vec2D{x: 0.0f32, y: 0.5f32},Vec2D{x: 1.0f32, y: 0.25f32},		Vec2D{x: 1.0f32, y: 0.25f32},Vec2D{x: 0.0f32, y: 0.0f32},], line_count: 2},
+		67 => Letter{ points: [vec2f{x: 0.0f32, y: 0.5f32},vec2f{x: 1.0f32, y: 1.0f32},		vec2f{x: 0.0f32, y: 0.5f32},vec2f{x: 1.0f32, y: 0.0f32},		vec2f{x: 1.0f32, y: 0.75f32},
+					vec2f{x: 0.0f32, y: 0.5f32},		vec2f{x: 0.0f32, y: 0.5f32},vec2f{x: 1.0f32, y: 0.25f32},		vec2f{x: 1.0f32, y: 0.25f32},vec2f{x: 0.0f32, y: 0.0f32},], line_count: 2},
 		// D
-		68 => Letter{ points: [Vec2D{x: 0.0f32, y: 0.0f32},Vec2D{x: 0.0f32, y: 1.0f32},		Vec2D{x: 0.0f32, y: 1.0f32},Vec2D{x: 1.0f32, y: 0.5f32},		Vec2D{x: 1.0f32, y: 0.5f32},
-					Vec2D{x: 0.0f32, y: 0.0f32},		Vec2D{x: 0.0f32, y: 0.5f32},Vec2D{x: 1.0f32, y: 0.25f32},		Vec2D{x: 1.0f32, y: 0.25f32},Vec2D{x: 0.0f32, y: 0.0f32},], line_count: 3},
+		68 => Letter{ points: [vec2f{x: 0.0f32, y: 0.0f32},vec2f{x: 0.0f32, y: 1.0f32},		vec2f{x: 0.0f32, y: 1.0f32},vec2f{x: 1.0f32, y: 0.5f32},		vec2f{x: 1.0f32, y: 0.5f32},
+					vec2f{x: 0.0f32, y: 0.0f32},		vec2f{x: 0.0f32, y: 0.5f32},vec2f{x: 1.0f32, y: 0.25f32},		vec2f{x: 1.0f32, y: 0.25f32},vec2f{x: 0.0f32, y: 0.0f32},], line_count: 3},
 		// E
-		69 => Letter{ points: [Vec2D{x: 0.0f32, y: 0.0f32},Vec2D{x: 0.0f32, y: 1.0f32},		Vec2D{x: 0.0f32, y: 1.0f32},Vec2D{x: 1.0f32, y: 1.0f32},		Vec2D{x: 0.0f32, y: 0.5f32},
-					Vec2D{x: 1.0f32, y: 0.5f32},		Vec2D{x: 0.0f32, y: 0.0f32},Vec2D{x: 1.0f32, y: 0.0f32},		Vec2D{x: 1.0f32, y: 0.25f32},Vec2D{x: 0.0f32, y: 0.0f32},], line_count: 4},
+		69 => Letter{ points: [vec2f{x: 0.0f32, y: 0.0f32},vec2f{x: 0.0f32, y: 1.0f32},		vec2f{x: 0.0f32, y: 1.0f32},vec2f{x: 1.0f32, y: 1.0f32},		vec2f{x: 0.0f32, y: 0.5f32},
+					vec2f{x: 1.0f32, y: 0.5f32},		vec2f{x: 0.0f32, y: 0.0f32},vec2f{x: 1.0f32, y: 0.0f32},		vec2f{x: 1.0f32, y: 0.25f32},vec2f{x: 0.0f32, y: 0.0f32},], line_count: 4},
 		// F
-		70 => Letter{ points: [Vec2D{x: 0.0f32, y: 0.0f32},Vec2D{x: 0.0f32, y: 1.0f32},		Vec2D{x: 0.0f32, y: 1.0f32},Vec2D{x: 1.0f32, y: 1.0f32},		Vec2D{x: 0.0f32, y: 0.5f32},
-					Vec2D{x: 1.0f32, y: 0.5f32},		Vec2D{x: 0.0f32, y: 0.0f32},Vec2D{x: 1.0f32, y: 0.0f32},		Vec2D{x: 1.0f32, y: 0.25f32},Vec2D{x: 0.0f32, y: 0.0f32},], line_count: 3},
+		70 => Letter{ points: [vec2f{x: 0.0f32, y: 0.0f32},vec2f{x: 0.0f32, y: 1.0f32},		vec2f{x: 0.0f32, y: 1.0f32},vec2f{x: 1.0f32, y: 1.0f32},		vec2f{x: 0.0f32, y: 0.5f32},
+					vec2f{x: 1.0f32, y: 0.5f32},		vec2f{x: 0.0f32, y: 0.0f32},vec2f{x: 1.0f32, y: 0.0f32},		vec2f{x: 1.0f32, y: 0.25f32},vec2f{x: 0.0f32, y: 0.0f32},], line_count: 3},
 		// G
-		71 => Letter{ points: [Vec2D{x: 0.0f32, y: 0.5f32},Vec2D{x: 1.0f32, y: 1.0f32},		Vec2D{x: 0.0f32, y: 0.5f32},Vec2D{x: 1.0f32, y: 0.0f32},		Vec2D{x: 1.0f32, y: 0.0f32},
-					Vec2D{x: 1.0f32, y: 0.5f32},		Vec2D{x: 0.0f32, y: 0.5f32},Vec2D{x: 1.0f32, y: 0.25f32},		Vec2D{x: 1.0f32, y: 0.25f32},Vec2D{x: 0.0f32, y: 0.0f32},], line_count: 3},
+		71 => Letter{ points: [vec2f{x: 0.0f32, y: 0.5f32},vec2f{x: 1.0f32, y: 1.0f32},		vec2f{x: 0.0f32, y: 0.5f32},vec2f{x: 1.0f32, y: 0.0f32},		vec2f{x: 1.0f32, y: 0.0f32},
+					vec2f{x: 1.0f32, y: 0.5f32},		vec2f{x: 0.0f32, y: 0.5f32},vec2f{x: 1.0f32, y: 0.25f32},		vec2f{x: 1.0f32, y: 0.25f32},vec2f{x: 0.0f32, y: 0.0f32},], line_count: 3},
 		// H
-		72 => Letter{ points: [Vec2D{x: 0.0f32, y: 0.0f32},Vec2D{x: 0.0f32, y: 1.0f32},		Vec2D{x: 0.0f32, y: 0.5f32},Vec2D{x: 1.0f32, y: 0.5f32},		Vec2D{x: 1.0f32, y: 1.0f32},
-					Vec2D{x: 1.0f32, y: 0.0f32},		Vec2D{x: 0.0f32, y: 0.0f32},Vec2D{x: 1.0f32, y: 0.0f32},		Vec2D{x: 1.0f32, y: 0.25f32},Vec2D{x: 0.0f32, y: 0.0f32},], line_count: 3},
+		72 => Letter{ points: [vec2f{x: 0.0f32, y: 0.0f32},vec2f{x: 0.0f32, y: 1.0f32},		vec2f{x: 0.0f32, y: 0.5f32},vec2f{x: 1.0f32, y: 0.5f32},		vec2f{x: 1.0f32, y: 1.0f32},
+					vec2f{x: 1.0f32, y: 0.0f32},		vec2f{x: 0.0f32, y: 0.0f32},vec2f{x: 1.0f32, y: 0.0f32},		vec2f{x: 1.0f32, y: 0.25f32},vec2f{x: 0.0f32, y: 0.0f32},], line_count: 3},
 		// I
-		73 => Letter{ points: [Vec2D{x: 0.5f32, y: 0.0f32},Vec2D{x: 0.5f32, y: 1.0f32},		Vec2D{x: 0.0f32, y: 0.5f32},Vec2D{x: 1.0f32, y: 0.5f32},		Vec2D{x: 1.0f32, y: 1.0f32},
-					Vec2D{x: 1.0f32, y: 0.0f32},		Vec2D{x: 0.0f32, y: 0.0f32},Vec2D{x: 1.0f32, y: 0.0f32},		Vec2D{x: 1.0f32, y: 0.25f32},Vec2D{x: 0.0f32, y: 0.0f32},], line_count: 1},
+		73 => Letter{ points: [vec2f{x: 0.5f32, y: 0.0f32},vec2f{x: 0.5f32, y: 1.0f32},		vec2f{x: 0.0f32, y: 0.5f32},vec2f{x: 1.0f32, y: 0.5f32},		vec2f{x: 1.0f32, y: 1.0f32},
+					vec2f{x: 1.0f32, y: 0.0f32},		vec2f{x: 0.0f32, y: 0.0f32},vec2f{x: 1.0f32, y: 0.0f32},		vec2f{x: 1.0f32, y: 0.25f32},vec2f{x: 0.0f32, y: 0.0f32},], line_count: 1},
 		// J
-		74 => Letter{ points: [Vec2D{x: 0.5f32, y: 0.0f32},Vec2D{x: 0.5f32, y: 1.0f32},		Vec2D{x: 0.0f32, y: 0.0f32},Vec2D{x: 0.5f32, y: 0.0f32},		Vec2D{x: 1.0f32, y: 1.0f32},
-					Vec2D{x: 1.0f32, y: 0.0f32},		Vec2D{x: 0.0f32, y: 0.0f32},Vec2D{x: 1.0f32, y: 0.0f32},		Vec2D{x: 1.0f32, y: 0.25f32},Vec2D{x: 0.0f32, y: 0.0f32},], line_count: 2},
+		74 => Letter{ points: [vec2f{x: 0.5f32, y: 0.0f32},vec2f{x: 0.5f32, y: 1.0f32},		vec2f{x: 0.0f32, y: 0.0f32},vec2f{x: 0.5f32, y: 0.0f32},		vec2f{x: 1.0f32, y: 1.0f32},
+					vec2f{x: 1.0f32, y: 0.0f32},		vec2f{x: 0.0f32, y: 0.0f32},vec2f{x: 1.0f32, y: 0.0f32},		vec2f{x: 1.0f32, y: 0.25f32},vec2f{x: 0.0f32, y: 0.0f32},], line_count: 2},
 		// K
-		75 => Letter{ points: [Vec2D{x: 0.0f32, y: 0.0f32},Vec2D{x: 0.0f32, y: 1.0f32},		Vec2D{x: 0.0f32, y: 0.5f32},Vec2D{x: 1.0f32, y: 1.0f32},		Vec2D{x: 0.0f32, y: 0.5f32},
-					Vec2D{x: 1.0f32, y: 0.0f32},		Vec2D{x: 0.0f32, y: 0.0f32},Vec2D{x: 1.0f32, y: 0.0f32},		Vec2D{x: 1.0f32, y: 0.25f32},Vec2D{x: 0.0f32, y: 0.0f32},], line_count: 3},
+		75 => Letter{ points: [vec2f{x: 0.0f32, y: 0.0f32},vec2f{x: 0.0f32, y: 1.0f32},		vec2f{x: 0.0f32, y: 0.5f32},vec2f{x: 1.0f32, y: 1.0f32},		vec2f{x: 0.0f32, y: 0.5f32},
+					vec2f{x: 1.0f32, y: 0.0f32},		vec2f{x: 0.0f32, y: 0.0f32},vec2f{x: 1.0f32, y: 0.0f32},		vec2f{x: 1.0f32, y: 0.25f32},vec2f{x: 0.0f32, y: 0.0f32},], line_count: 3},
 		// L
-		76 => Letter{ points: [Vec2D{x: 0.0f32, y: 0.0f32},Vec2D{x: 0.0f32, y: 1.0f32},		Vec2D{x: 0.0f32, y: 0.0f32},Vec2D{x: 1.0f32, y: 0.0f32},		Vec2D{x: 0.0f32, y: 0.5f32},
-					Vec2D{x: 1.0f32, y: 0.0f32},		Vec2D{x: 0.0f32, y: 0.0f32},Vec2D{x: 1.0f32, y: 0.0f32},		Vec2D{x: 1.0f32, y: 0.25f32},Vec2D{x: 0.0f32, y: 0.0f32},], line_count: 2},
+		76 => Letter{ points: [vec2f{x: 0.0f32, y: 0.0f32},vec2f{x: 0.0f32, y: 1.0f32},		vec2f{x: 0.0f32, y: 0.0f32},vec2f{x: 1.0f32, y: 0.0f32},		vec2f{x: 0.0f32, y: 0.5f32},
+					vec2f{x: 1.0f32, y: 0.0f32},		vec2f{x: 0.0f32, y: 0.0f32},vec2f{x: 1.0f32, y: 0.0f32},		vec2f{x: 1.0f32, y: 0.25f32},vec2f{x: 0.0f32, y: 0.0f32},], line_count: 2},
 		// M
-		77 => Letter{ points: [Vec2D{x: 0.0f32, y: 0.0f32},Vec2D{x: 0.0f32, y: 1.0f32},		Vec2D{x: 0.0f32, y: 1.0f32},Vec2D{x: 0.5f32, y: 0.5f32},		Vec2D{x: 0.5f32, y: 0.5f32},
-					Vec2D{x: 1.0f32, y: 1.0f32},		Vec2D{x: 1.0f32, y: 1.0f32},Vec2D{x: 1.0f32, y: 0.0f32},		Vec2D{x: 1.0f32, y: 0.25f32},Vec2D{x: 0.0f32, y: 0.0f32},], line_count: 4},
+		77 => Letter{ points: [vec2f{x: 0.0f32, y: 0.0f32},vec2f{x: 0.0f32, y: 1.0f32},		vec2f{x: 0.0f32, y: 1.0f32},vec2f{x: 0.5f32, y: 0.5f32},		vec2f{x: 0.5f32, y: 0.5f32},
+					vec2f{x: 1.0f32, y: 1.0f32},		vec2f{x: 1.0f32, y: 1.0f32},vec2f{x: 1.0f32, y: 0.0f32},		vec2f{x: 1.0f32, y: 0.25f32},vec2f{x: 0.0f32, y: 0.0f32},], line_count: 4},
 		// N
-		78 => Letter{ points: [Vec2D{x: 0.0f32, y: 0.0f32},Vec2D{x: 0.0f32, y: 1.0f32},		Vec2D{x: 0.0f32, y: 1.0f32},Vec2D{x: 1.0f32, y: 0.0f32},		Vec2D{x: 1.0f32, y: 0.0f32},
-					Vec2D{x: 1.0f32, y: 1.0f32},		Vec2D{x: 1.0f32, y: 1.0f32},Vec2D{x: 0.0f32, y: 0.0f32},		Vec2D{x: 1.0f32, y: 0.25f32},Vec2D{x: 0.0f32, y: 0.0f32},], line_count: 3},
+		78 => Letter{ points: [vec2f{x: 0.0f32, y: 0.0f32},vec2f{x: 0.0f32, y: 1.0f32},		vec2f{x: 0.0f32, y: 1.0f32},vec2f{x: 1.0f32, y: 0.0f32},		vec2f{x: 1.0f32, y: 0.0f32},
+					vec2f{x: 1.0f32, y: 1.0f32},		vec2f{x: 1.0f32, y: 1.0f32},vec2f{x: 0.0f32, y: 0.0f32},		vec2f{x: 1.0f32, y: 0.25f32},vec2f{x: 0.0f32, y: 0.0f32},], line_count: 3},
 		// O
-		79 => Letter{ points: [Vec2D{x: 0.0f32, y: 0.5f32},Vec2D{x: 0.5f32, y: 1.0f32},		Vec2D{x: 0.5f32, y: 1.0f32},Vec2D{x: 1.0f32, y: 0.5f32},		Vec2D{x: 1.0f32, y: 0.5f32},
-					Vec2D{x: 0.5f32, y: 0.0f32},		Vec2D{x: 0.5f32, y: 0.0f32},Vec2D{x: 0.0f32, y: 0.5f32},		Vec2D{x: 1.0f32, y: 0.25f32},Vec2D{x: 0.0f32, y: 0.0f32},], line_count: 4},
+		79 => Letter{ points: [vec2f{x: 0.0f32, y: 0.5f32},vec2f{x: 0.5f32, y: 1.0f32},		vec2f{x: 0.5f32, y: 1.0f32},vec2f{x: 1.0f32, y: 0.5f32},		vec2f{x: 1.0f32, y: 0.5f32},
+					vec2f{x: 0.5f32, y: 0.0f32},		vec2f{x: 0.5f32, y: 0.0f32},vec2f{x: 0.0f32, y: 0.5f32},		vec2f{x: 1.0f32, y: 0.25f32},vec2f{x: 0.0f32, y: 0.0f32},], line_count: 4},
 		// P
-		80 => Letter{ points: [Vec2D{x: 0.0f32, y: 0.0f32},Vec2D{x: 0.0f32, y: 1.0f32},		Vec2D{x: 0.0f32, y: 1.0f32},Vec2D{x: 0.75f32, y: 0.75f32},		Vec2D{x: 0.75f32, y: 0.75f32},
-					Vec2D{x: 0.0f32, y: 0.5f32},		Vec2D{x: 0.5f32, y: 0.0f32},Vec2D{x: 0.0f32, y: 0.5f32},		Vec2D{x: 1.0f32, y: 0.25f32},Vec2D{x: 0.0f32, y: 0.0f32},], line_count: 3},
+		80 => Letter{ points: [vec2f{x: 0.0f32, y: 0.0f32},vec2f{x: 0.0f32, y: 1.0f32},		vec2f{x: 0.0f32, y: 1.0f32},vec2f{x: 0.75f32, y: 0.75f32},		vec2f{x: 0.75f32, y: 0.75f32},
+					vec2f{x: 0.0f32, y: 0.5f32},		vec2f{x: 0.5f32, y: 0.0f32},vec2f{x: 0.0f32, y: 0.5f32},		vec2f{x: 1.0f32, y: 0.25f32},vec2f{x: 0.0f32, y: 0.0f32},], line_count: 3},
 		// Q
-		81 => Letter{ points: [Vec2D{x: 0.0f32, y: 0.5f32},Vec2D{x: 0.5f32, y: 1.0f32},		Vec2D{x: 0.5f32, y: 1.0f32},Vec2D{x: 1.0f32, y: 0.5f32},		Vec2D{x: 1.0f32, y: 0.5f32},
-					Vec2D{x: 0.5f32, y: 0.0f32},		Vec2D{x: 0.5f32, y: 0.0f32},Vec2D{x: 0.0f32, y: 0.5f32},		Vec2D{x: 0.5f32, y: 0.5f32},Vec2D{x: 1.0f32, y: 0.0f32},], line_count: 5},
+		81 => Letter{ points: [vec2f{x: 0.0f32, y: 0.5f32},vec2f{x: 0.5f32, y: 1.0f32},		vec2f{x: 0.5f32, y: 1.0f32},vec2f{x: 1.0f32, y: 0.5f32},		vec2f{x: 1.0f32, y: 0.5f32},
+					vec2f{x: 0.5f32, y: 0.0f32},		vec2f{x: 0.5f32, y: 0.0f32},vec2f{x: 0.0f32, y: 0.5f32},		vec2f{x: 0.5f32, y: 0.5f32},vec2f{x: 1.0f32, y: 0.0f32},], line_count: 5},
 		// R
-		82 => Letter{ points: [Vec2D{x: 0.0f32, y: 0.0f32},Vec2D{x: 0.0f32, y: 1.0f32},		Vec2D{x: 0.0f32, y: 1.0f32},Vec2D{x: 0.75f32, y: 0.75f32},		Vec2D{x: 0.75f32, y: 0.75f32},
-					Vec2D{x: 0.0f32, y: 0.5f32},		Vec2D{x: 0.0f32, y: 0.5f32},Vec2D{x: 1.0f32, y: 0.0f32},		Vec2D{x: 1.0f32, y: 0.25f32},Vec2D{x: 0.0f32, y: 0.0f32},], line_count: 4},
+		82 => Letter{ points: [vec2f{x: 0.0f32, y: 0.0f32},vec2f{x: 0.0f32, y: 1.0f32},		vec2f{x: 0.0f32, y: 1.0f32},vec2f{x: 0.75f32, y: 0.75f32},		vec2f{x: 0.75f32, y: 0.75f32},
+					vec2f{x: 0.0f32, y: 0.5f32},		vec2f{x: 0.0f32, y: 0.5f32},vec2f{x: 1.0f32, y: 0.0f32},		vec2f{x: 1.0f32, y: 0.25f32},vec2f{x: 0.0f32, y: 0.0f32},], line_count: 4},
 		// S
-		83 => Letter{ points: [Vec2D{x: 0.0f32, y: 0.0f32},Vec2D{x: 1.0f32, y: 0.25f32},		Vec2D{x: 1.0f32, y: 0.25f32},Vec2D{x: 0.0f32, y: 0.75f32},		Vec2D{x: 0.0f32, y: 0.75f32},
-					Vec2D{x: 1.0f32, y: 1.0f32},		Vec2D{x: 0.5f32, y: 0.0f32},Vec2D{x: 0.0f32, y: 0.5f32},		Vec2D{x: 1.0f32, y: 0.25f32},Vec2D{x: 0.0f32, y: 0.0f32},], line_count: 3},
+		83 => Letter{ points: [vec2f{x: 0.0f32, y: 0.0f32},vec2f{x: 1.0f32, y: 0.25f32},	vec2f{x: 1.0f32, y: 0.25f32},vec2f{x: 0.0f32, y: 0.75f32},		vec2f{x: 0.0f32, y: 0.75f32},
+					vec2f{x: 1.0f32, y: 1.0f32},		vec2f{x: 0.5f32, y: 0.0f32},vec2f{x: 0.0f32, y: 0.5f32},		vec2f{x: 1.0f32, y: 0.25f32},vec2f{x: 0.0f32, y: 0.0f32},], line_count: 3},
 		// T
-		84 => Letter{ points: [Vec2D{x: 0.0f32, y: 1.0f32},Vec2D{x: 1.0f32, y: 1.0f32},		Vec2D{x: 0.5f32, y: 0.0f32},Vec2D{x: 0.5f32, y: 1.0f32},		Vec2D{x: 0.0f32, y: 0.75f32},
-					Vec2D{x: 1.0f32, y: 1.0f32},		Vec2D{x: 0.5f32, y: 0.0f32},Vec2D{x: 0.0f32, y: 0.5f32},		Vec2D{x: 1.0f32, y: 0.25f32},Vec2D{x: 0.0f32, y: 0.0f32},], line_count: 2},
+		84 => Letter{ points: [vec2f{x: 0.0f32, y: 1.0f32},vec2f{x: 1.0f32, y: 1.0f32},		vec2f{x: 0.5f32, y: 0.0f32},vec2f{x: 0.5f32, y: 1.0f32},		vec2f{x: 0.0f32, y: 0.75f32},
+					vec2f{x: 1.0f32, y: 1.0f32},		vec2f{x: 0.5f32, y: 0.0f32},vec2f{x: 0.0f32, y: 0.5f32},		vec2f{x: 1.0f32, y: 0.25f32},vec2f{x: 0.0f32, y: 0.0f32},], line_count: 2},
 		// U
-		85 => Letter{ points: [Vec2D{x: 0.0f32, y: 0.25f32},Vec2D{x: 0.0f32, y: 1.0f32},		Vec2D{x: 0.0f32, y: 0.25f32},Vec2D{x: 0.25f32, y: 0.0f32},		Vec2D{x: 0.25f32, y: 0.0f32},
-					Vec2D{x: 0.75f32, y: 0.0f32},		Vec2D{x: 0.75f32, y: 0.0f32},Vec2D{x: 1.0f32, y: 0.25f32},		Vec2D{x: 1.0f32, y: 0.25f32},Vec2D{x: 1.0f32, y: 1.0f32},], line_count: 5},
+		85 => Letter{ points: [vec2f{x: 0.0f32, y: 0.25f32},vec2f{x: 0.0f32, y: 1.0f32},	vec2f{x: 0.0f32, y: 0.25f32},vec2f{x: 0.25f32, y: 0.0f32},		vec2f{x: 0.25f32, y: 0.0f32},
+					vec2f{x: 0.75f32, y: 0.0f32},		vec2f{x: 0.75f32, y: 0.0f32},vec2f{x: 1.0f32, y: 0.25f32},		vec2f{x: 1.0f32, y: 0.25f32},vec2f{x: 1.0f32, y: 1.0f32},], line_count: 5},
 		// V
-		86 => Letter{ points: [Vec2D{x: 0.0f32, y: 1.0f32},Vec2D{x: 0.5f32, y: 0.0f32},		Vec2D{x: 0.5f32, y: 0.0f32},Vec2D{x: 1.0f32, y: 1.0f32},		Vec2D{x: 0.25f32, y: 0.0f32},
-					Vec2D{x: 0.75f32, y: 0.0f32},		Vec2D{x: 0.75f32, y: 0.0f32},Vec2D{x: 1.0f32, y: 0.25f32},		Vec2D{x: 1.0f32, y: 0.25f32},Vec2D{x: 1.0f32, y: 1.0f32},], line_count: 2},
+		86 => Letter{ points: [vec2f{x: 0.0f32, y: 1.0f32},vec2f{x: 0.5f32, y: 0.0f32},		vec2f{x: 0.5f32, y: 0.0f32},vec2f{x: 1.0f32, y: 1.0f32},		vec2f{x: 0.25f32, y: 0.0f32},
+					vec2f{x: 0.75f32, y: 0.0f32},		vec2f{x: 0.75f32, y: 0.0f32},vec2f{x: 1.0f32, y: 0.25f32},		vec2f{x: 1.0f32, y: 0.25f32},vec2f{x: 1.0f32, y: 1.0f32},], line_count: 2},
 		// W
-		87 => Letter{ points: [Vec2D{x: 0.0f32, y: 1.0f32},Vec2D{x: 0.0f32, y: 0.0f32},		Vec2D{x: 0.0f32, y: 0.0f32},Vec2D{x: 0.5f32, y: 0.5f32},		Vec2D{x: 0.5f32, y: 0.5f32},
-					Vec2D{x: 1.0f32, y: 0.0f32},		Vec2D{x: 1.0f32, y: 0.0f32},Vec2D{x: 1.0f32, y: 1.0f32},		Vec2D{x: 1.0f32, y: 0.25f32},Vec2D{x: 1.0f32, y: 1.0f32},], line_count: 4},
+		87 => Letter{ points: [vec2f{x: 0.0f32, y: 1.0f32},vec2f{x: 0.0f32, y: 0.0f32},		vec2f{x: 0.0f32, y: 0.0f32},vec2f{x: 0.5f32, y: 0.5f32},		vec2f{x: 0.5f32, y: 0.5f32},
+					vec2f{x: 1.0f32, y: 0.0f32},		vec2f{x: 1.0f32, y: 0.0f32},vec2f{x: 1.0f32, y: 1.0f32},		vec2f{x: 1.0f32, y: 0.25f32},vec2f{x: 1.0f32, y: 1.0f32},], line_count: 4},
 		// X
-		88 => Letter{ points: [Vec2D{x: 0.0f32, y: 1.0f32},Vec2D{x: 1.0f32, y: 0.0f32},		Vec2D{x: 0.0f32, y: 0.0f32},Vec2D{x: 1.0f32, y: 1.0f32},		Vec2D{x: 0.5f32, y: 0.5f32},
-					Vec2D{x: 1.0f32, y: 0.0f32},		Vec2D{x: 1.0f32, y: 0.0f32},Vec2D{x: 1.0f32, y: 1.0f32},		Vec2D{x: 1.0f32, y: 0.25f32},Vec2D{x: 1.0f32, y: 1.0f32},], line_count: 2},
+		88 => Letter{ points: [vec2f{x: 0.0f32, y: 1.0f32},vec2f{x: 1.0f32, y: 0.0f32},		vec2f{x: 0.0f32, y: 0.0f32},vec2f{x: 1.0f32, y: 1.0f32},		vec2f{x: 0.5f32, y: 0.5f32},
+					vec2f{x: 1.0f32, y: 0.0f32},		vec2f{x: 1.0f32, y: 0.0f32},vec2f{x: 1.0f32, y: 1.0f32},		vec2f{x: 1.0f32, y: 0.25f32},vec2f{x: 1.0f32, y: 1.0f32},], line_count: 2},
 		// Y
-		89 => Letter{ points: [Vec2D{x: 0.0f32, y: 1.0f32},Vec2D{x: 0.5f32, y: 0.5f32},		Vec2D{x: 0.0f32, y: 0.0f32},Vec2D{x: 1.0f32, y: 1.0f32},		Vec2D{x: 0.5f32, y: 0.5f32},
-					Vec2D{x: 1.0f32, y: 0.0f32},		Vec2D{x: 1.0f32, y: 0.0f32},Vec2D{x: 1.0f32, y: 1.0f32},		Vec2D{x: 1.0f32, y: 0.25f32},Vec2D{x: 1.0f32, y: 1.0f32},], line_count: 2},
+		89 => Letter{ points: [vec2f{x: 0.0f32, y: 1.0f32},vec2f{x: 0.5f32, y: 0.5f32},		vec2f{x: 0.0f32, y: 0.0f32},vec2f{x: 1.0f32, y: 1.0f32},		vec2f{x: 0.5f32, y: 0.5f32},
+					vec2f{x: 1.0f32, y: 0.0f32},		vec2f{x: 1.0f32, y: 0.0f32},vec2f{x: 1.0f32, y: 1.0f32},		vec2f{x: 1.0f32, y: 0.25f32},vec2f{x: 1.0f32, y: 1.0f32},], line_count: 2},
 		// Z
-		90 => Letter{ points: [Vec2D{x: 0.0f32, y: 1.0f32},Vec2D{x: 1.0f32, y: 1.0f32},		Vec2D{x: 0.0f32, y: 0.0f32},Vec2D{x: 1.0f32, y: 1.0f32},		Vec2D{x: 0.0f32, y: 0.0f32},
-					Vec2D{x: 1.0f32, y: 0.0f32},		Vec2D{x: 1.0f32, y: 0.0f32},Vec2D{x: 1.0f32, y: 1.0f32},		Vec2D{x: 1.0f32, y: 0.25f32},Vec2D{x: 1.0f32, y: 1.0f32},], line_count: 3},
+		90 => Letter{ points: [vec2f{x: 0.0f32, y: 1.0f32},vec2f{x: 1.0f32, y: 1.0f32},		vec2f{x: 0.0f32, y: 0.0f32},vec2f{x: 1.0f32, y: 1.0f32},		vec2f{x: 0.0f32, y: 0.0f32},
+					vec2f{x: 1.0f32, y: 0.0f32},		vec2f{x: 1.0f32, y: 0.0f32},vec2f{x: 1.0f32, y: 1.0f32},		vec2f{x: 1.0f32, y: 0.25f32},vec2f{x: 1.0f32, y: 1.0f32},], line_count: 3},
 		
 			
 			
 							
-		_ => Letter{ points: [Vec2D{x: 0.0f32, y: 0.0f32},Vec2D{x: 0.0f32, y: 0.0f32},Vec2D{x: 0.0f32, y: 0.0f32},Vec2D{x: 0.0f32, y: 0.0f32},Vec2D{x: 0.0f32, y: 0.0f32},
-		Vec2D{x: 0.0f32, y: 0.0f32},Vec2D{x: 0.0f32, y: 0.0f32},Vec2D{x: 0.0f32, y: 0.0f32},Vec2D{x: 0.0f32, y: 0.0f32},Vec2D{x: 0.0f32, y: 0.0f32},], line_count: 0}
+		_ => Letter{ points: [vec2f{x: 0.0f32, y: 0.0f32},vec2f{x: 0.0f32, y: 0.0f32},vec2f{x: 0.0f32, y: 0.0f32},vec2f{x: 0.0f32, y: 0.0f32},vec2f{x: 0.0f32, y: 0.0f32},
+		vec2f{x: 0.0f32, y: 0.0f32},vec2f{x: 0.0f32, y: 0.0f32},vec2f{x: 0.0f32, y: 0.0f32},vec2f{x: 0.0f32, y: 0.0f32},vec2f{x: 0.0f32, y: 0.0f32},], line_count: 0}
 	}
-}
-
-// used only to display fps so 4 chars is ok... damn fixed size stuff with no heap !
-pub fn int_to_chars(int_in: i32) -> [u8; 8]
-{
-	let mut out: [u8; 8] = [0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8];
-	let mut in_copy = int_in;
-
-	for x in 0..8
-	{
-		out[x] = (in_copy % 10) as u8;
-		in_copy /= 10;
-	}
-
-	out
 }

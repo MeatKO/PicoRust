@@ -1,119 +1,193 @@
 use core::ops::{self, Add, Sub, Mul, Div, AddAssign, SubAssign, MulAssign, DivAssign};
 
 #[derive(Clone, Copy)]
-pub struct Vec2D
+pub struct vec2f
 {
 	pub x: f32,
 	pub y: f32
 }
 
-impl Vec2D
+#[derive(Clone, Copy)]
+pub struct vec3f
 {
-	pub fn New() -> Vec2D
+	pub x: f32,
+	pub y: f32,
+	pub z: f32
+}
+
+#[derive(Clone, Copy)]
+pub struct vec4f
+{
+	pub x: f32,
+	pub y: f32,
+	pub z: f32,
+	pub w: f32
+}
+
+impl vec3f
+{
+	pub fn new() -> vec3f
 	{
-		Vec2D{
+		vec3f{
+			x: 0.0f32,
+			y: 0.0f32,
+			z: 0.0f32
+		}
+	}
+
+	pub fn scale(&self, factor: f32) -> vec3f
+	{
+		vec3f{
+			x: self.x * factor,
+			y: self.y * factor,
+			z: self.z * factor
+		}
+	}
+
+	pub fn add(&self, v3: &vec3f) -> vec3f
+	{
+		vec3f{
+			x: self.x + v3.x,
+			y: self.y + v3.y,
+			z: self.z + v3.z
+		}
+	}
+}
+
+impl ops::Add<&vec3f> for vec3f 
+{
+	type Output = vec3f;
+
+    fn add(self, _rhs: &vec3f) -> vec3f 
+	{
+        vec3f{
+			x: self.x + _rhs.x,
+			y: self.y + _rhs.y,
+			z: self.z + _rhs.z
+		}
+    }
+}
+
+impl vec4f
+{
+	pub fn new() -> vec4f
+	{
+		vec4f{
+			x: 0.0f32,
+			y: 0.0f32,
+			z: 0.0f32,
+			w: 0.0f32
+		}
+	}
+}
+
+impl vec2f
+{
+	pub fn new() -> vec2f
+	{
+		vec2f{
 			x: 0.0f32,
 			y: 0.0f32
 		}
 	}
 
-	pub fn add(&self, v2: &Vec2D) -> Vec2D
+	pub fn add(&self, v2: &vec2f) -> vec2f
 	{
-		Vec2D{
+		vec2f{
 			x: self.x + v2.x,
 			y: self.y + v2.y
 		}
 	}
 
-	pub fn sub(&self, v2: &Vec2D) -> Vec2D
+	pub fn sub(&self, v2: &vec2f) -> vec2f
 	{
-		Vec2D{
+		vec2f{
 			x: self.x - v2.x,
 			y: self.y - v2.y
 		}
 	}
 
-	pub fn scale(&self, factor: f32) -> Vec2D
+	pub fn scale(&self, factor: f32) -> vec2f
 	{
-		Vec2D{
+		vec2f{
 			x: self.x * factor,
 			y: self.y * factor
 		}
 	}
 
-	pub fn rotate(&self, degrees: f32) -> Vec2D
+	pub fn rotate(&self, degrees: f32) -> vec2f
 	{
 		let s = libm::sin(degrees as f64) as f32;
 		let c = libm::cos(degrees as f64) as f32;
 
-		Vec2D{
+		vec2f{
 			x: (self.x * c - self.y * s), 
 			y: (self.x * s + self.y * c)
 		}
 	}
 
-	pub fn translate(&self, vec: Vec2D) -> Vec2D
+	pub fn translate(&self, vec: vec2f) -> vec2f
 	{
-		Vec2D{
+		vec2f{
 			x: self.x + vec.x, 
 			y: self.y + vec.y
 		}
 	}
 }
 
-impl Default for Vec2D
+impl Default for vec2f
 {
 	fn default() -> Self {
-		Vec2D::New()
+		vec2f::new()
 	}
 }
 
-impl ops::Add<&Vec2D> for &Vec2D 
+impl ops::Add<&vec2f> for &vec2f 
 {
-    type Output = Vec2D;
+    type Output = vec2f;
 
-    fn add(self, _rhs: &Vec2D) -> Vec2D 
+    fn add(self, _rhs: &vec2f) -> vec2f 
 	{
-        Vec2D{
+        vec2f{
 			x: self.x + _rhs.x,
 			y: self.y + _rhs.y
 		}
     }
 }
 
-impl ops::Sub<&Vec2D> for &Vec2D 
+impl ops::Sub<&vec2f> for &vec2f 
 {
-    type Output = Vec2D;
+    type Output = vec2f;
 
-    fn sub(self, _rhs: &Vec2D) -> Vec2D 
+    fn sub(self, _rhs: &vec2f) -> vec2f 
 	{
-        Vec2D{
+        vec2f{
 			x: self.x - _rhs.x,
 			y: self.y - _rhs.y
 		}
     }
 }
 
-impl ops::Mul<f32> for Vec2D 
+impl ops::Mul<f32> for vec2f 
 {
-    type Output = Vec2D;
+    type Output = vec2f;
 
-    fn mul(self, factor: f32) -> Vec2D 
+    fn mul(self, factor: f32) -> vec2f 
 	{
-        Vec2D{
+        vec2f{
 			x: self.x * factor,
 			y: self.y * factor
 		}
     }
 }
 
-impl ops::Div<f32> for Vec2D 
+impl ops::Div<f32> for vec2f 
 {
-    type Output = Vec2D;
+    type Output = vec2f;
 
-    fn div(self, factor: f32) -> Vec2D 
+    fn div(self, factor: f32) -> vec2f 
 	{
-        Vec2D{
+        vec2f{
 			x: self.x / factor,
 			y: self.y / factor
 		}
@@ -121,27 +195,27 @@ impl ops::Div<f32> for Vec2D
 }
 
 // assign 
-impl ops::AddAssign<&Vec2D> for Vec2D 
+impl ops::AddAssign<&vec2f> for vec2f 
 {
 
-    fn add_assign(&mut self, _rhs: &Vec2D) 
+    fn add_assign(&mut self, _rhs: &vec2f) 
 	{
         self.x += _rhs.x;
 		self.y += _rhs.y;
     }
 }
 
-impl ops::SubAssign<&Vec2D> for Vec2D 
+impl ops::SubAssign<&vec2f> for vec2f 
 {
 
-    fn sub_assign(&mut self, _rhs: &Vec2D) 
+    fn sub_assign(&mut self, _rhs: &vec2f) 
 	{
         self.x -= _rhs.x;
 		self.y -= _rhs.y;
     }
 }
 
-impl ops::MulAssign<f32> for Vec2D 
+impl ops::MulAssign<f32> for vec2f 
 {
 
     fn mul_assign(&mut self, factor: f32) 
@@ -151,7 +225,7 @@ impl ops::MulAssign<f32> for Vec2D
     }
 }
 
-impl ops::DivAssign<f32> for Vec2D 
+impl ops::DivAssign<f32> for vec2f 
 {
     fn div_assign(&mut self, factor: f32) 
 	{

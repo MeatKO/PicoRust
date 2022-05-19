@@ -1,4 +1,4 @@
-use crate::vector::Vec2D;
+use crate::vector::vec2f;
 use crate::pixel_ops::colors;
 
 pub fn draw_iter<T: Iterator<Item = u8>>(framebuffer: &mut [u8], x_begin: usize, y_begin: usize, x_end: usize, y_end: usize, mut pixels: T)
@@ -48,19 +48,19 @@ pub fn clear(framebuffer: &mut [u8])
 	}
 }
 
-pub fn draw_line_vertex(framebuffer: &mut [u8], begin: &Vec2D, end: &Vec2D, color: u8)
+pub fn draw_line_vertex(framebuffer: &mut [u8], begin: &vec2f, end: &vec2f, color: u8)
 {
-	draw_line(framebuffer, &Vec2D { x: begin.x, y: begin.y }, &Vec2D { x: end.x, y: end.y }, color);
+	draw_line(framebuffer, &vec2f { x: begin.x, y: begin.y }, &vec2f { x: end.x, y: end.y }, color);
 }
 
-pub fn draw_vertex(framebuffer: &mut [u8], vert: &Vec2D, pixel: u8)
+pub fn draw_vertex(framebuffer: &mut [u8], vert: &vec2f, pixel: u8)
 {
 	draw_pixel(framebuffer, vert.x as usize, vert.y as usize, pixel);
 }
 
-pub fn draw_line(framebuffer: &mut [u8], begin: &Vec2D, end: &Vec2D, color: u8)
+pub fn draw_line(framebuffer: &mut [u8], begin: &vec2f, end: &vec2f, color: u8)
 {
-	let line_vec: Vec2D = end - begin;
+	let line_vec: vec2f = end - begin;
 	let slope = line_vec.y / line_vec.x;
 
 	if slope <= 1.0f32 && slope >= -1.0f32
@@ -91,7 +91,7 @@ pub fn draw_line_horizontal(framebuffer: &mut [u8], y: f32, begin_x: f32, end_x:
 	}
 }
 
-fn draw_line_x(framebuffer: &mut [u8], begin: &Vec2D, line_vec: &Vec2D, slope: f32, color: u8)
+fn draw_line_x(framebuffer: &mut [u8], begin: &vec2f, line_vec: &vec2f, slope: f32, color: u8)
 {
 	if line_vec.x > 0.0f32
 	{
@@ -110,7 +110,7 @@ fn draw_line_x(framebuffer: &mut [u8], begin: &Vec2D, line_vec: &Vec2D, slope: f
 	}
 }
 
-fn draw_line_y(framebuffer: &mut [u8], begin: &Vec2D, line_vec: &Vec2D, slope: f32, color: u8)
+fn draw_line_y(framebuffer: &mut [u8], begin: &vec2f, line_vec: &vec2f, slope: f32, color: u8)
 {
 	if line_vec.y > 0.0f32
 	{

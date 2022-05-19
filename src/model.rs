@@ -1,96 +1,122 @@
-use crate::vector::Vec2D;
+use crate::vector::{vec2f, vec3f};
 use crate::framebuffer::{self, draw_line};
 use crate::pixel_ops::colors;
+use crate::matrix::mat4x4;
+use crate::display;
 
-pub struct Cube2D
+pub struct triangle
 {
-	pub Points: [Vec2D; 4],
-	pub Color: u8
+	pub points: [vec2f; 3]
 }
 
-pub struct Triangle
+pub struct triangle3d
 {
-	pub points: [Vec2D; 3]
+	pub points: [vec3f; 3]
 }
 
-
-impl Cube2D
+pub struct cube
 {
-	pub fn New() -> Cube2D
+	pub points: [vec3f; 8]
+}
+
+impl cube
+{
+	pub fn new() -> cube
 	{	
-		Cube2D{
-			Points: [
-				Vec2D{x: 25f32, y: 25f32},
-				Vec2D{x: -25f32, y: 25f32},
-				Vec2D{x: -25f32, y: -25f32},
-				Vec2D{x: 25f32, y: -25f32}
-			],
-			Color: 255u8
+		cube{
+			points: [
+				vec3f{x: 1.0f32, y: 1.0f32, z: 1.0f32},
+				vec3f{x: 1.0f32, y: -1.0f32, z: 1.0f32},
+				vec3f{x: -1.0f32, y: -1.0f32, z: 1.0f32},
+				vec3f{x: -1.0f32, y: 1.0f32, z: 1.0f32},
+				vec3f{x: 1.0f32, y: 1.0f32, z: -1.0f32},
+				vec3f{x: 1.0f32, y: -1.0f32, z: -1.0f32},
+				vec3f{x: -1.0f32, y: -1.0f32, z: -1.0f32},
+				vec3f{x: -1.0f32, y: 1.0f32, z: -1.0f32}
+			]
 		}
 	}
 
-	pub fn Rotate(&self, degrees: f32) -> Cube2D
-	{
-		Cube2D{
-			Points: [
-				self.Points[0].rotate(degrees),
-				self.Points[1].rotate(degrees),
-				self.Points[2].rotate(degrees),
-				self.Points[3].rotate(degrees)
-			],
-			Color: 255u8
+	pub fn scale(&self, factor: f32) -> cube
+	{	
+		cube{
+			points: [
+				self.points[0].scale(factor),
+				self.points[1].scale(factor),
+				self.points[2].scale(factor),
+				self.points[3].scale(factor),
+				self.points[4].scale(factor),
+				self.points[5].scale(factor),
+				self.points[6].scale(factor),
+				self.points[7].scale(factor),
+			]
 		}
 	}
 
-	pub fn Translate(&self, t: Vec2D) -> Cube2D
-	{
-		Cube2D{
-			Points: [
-				Vec2D{x: self.Points[0].x + t.x, y: self.Points[0].y + t.y},
-				Vec2D{x: self.Points[1].x + t.x, y: self.Points[1].y + t.y},
-				Vec2D{x: self.Points[2].x + t.x, y: self.Points[2].y + t.y},
-				Vec2D{x: self.Points[3].x + t.x, y: self.Points[3].y + t.y}
-			],
-			Color: 255u8
+	pub fn translate(&self, trans_vec: vec3f) -> cube
+	{	
+		cube{
+			points: [
+				self.points[0] + &trans_vec,
+				self.points[1] + &trans_vec,
+				self.points[2] + &trans_vec,
+				self.points[3] + &trans_vec,
+				self.points[4] + &trans_vec,
+				self.points[5] + &trans_vec,
+				self.points[6] + &trans_vec,
+				self.points[7] + &trans_vec,
+			]
 		}
 	}
 
-	pub fn Scale(&self, factor: f32) -> Cube2D
+	pub fn project(&self, mvp_matrix: &mat4x4) -> [vec2f; 8]
 	{
-		Cube2D{
-			Points: [
-				Vec2D{x: self.Points[0].x * factor, y: self.Points[0].y * factor},
-				Vec2D{x: self.Points[1].x * factor, y: self.Points[1].y * factor},
-				Vec2D{x: self.Points[2].x * factor, y: self.Points[2].y * factor},
-				Vec2D{x: self.Points[3].x * factor, y: self.Points[3].y * factor}
-			],
-			Color: 255u8
+		let mut out_points = [vec2f::new(); 8];
+
+		for i in 0..8
+		{
+			let vec_projected = *mvp_matrix * &self.points[i];
+
+			out_points[i].x = f32::min(display::SCREEN_WIDTH as f32 - 1.0f32, (vec_projected.x + 1.0f32) * 0.5f32 * display::SCREEN_WIDTH as f32);
+			out_points[i].y = f32::min(display::SCREEN_HEIGHT as f32 - 1.0f32, (1.0f32 - ((vec_projected.y + 1.0f32) * 0.5f32)) * display::SCREEN_HEIGHT as f32);
+
+			out_points[i].x -= 30.0f32;
+			out_points[i].y += 30.0f32;
 		}
+
+		out_points
 	}
 
-	pub fn Draw(&self, framebuffer: &mut [u8])
+	pub fn rasterize_wireframe(&self, framebuffer: &mut [u8], mvp_matrix: &mat4x4, color: u8)
 	{
-		framebuffer::draw_line_vertex(framebuffer, &self.Points[0], &self.Points[1], 38u8); // g
-		framebuffer::draw_line_vertex(framebuffer, &self.Points[1], &self.Points[2], 86u8); // b
-		framebuffer::draw_line_vertex(framebuffer, &self.Points[2], &self.Points[3], 133u8); // r
-		framebuffer::draw_line_vertex(framebuffer, &self.Points[3], &self.Points[0], 255u8); // w
-	}
+		let projected_points = self.project(mvp_matrix);
 
-	pub fn Draw_Fill(&self, framebuffer: &mut [u8])
-	{
-		
+		draw_line(framebuffer, &projected_points[0], &projected_points[1], color);
+		draw_line(framebuffer, &projected_points[1], &projected_points[2], color);
+		draw_line(framebuffer, &projected_points[2], &projected_points[3], color);
+		draw_line(framebuffer, &projected_points[3], &projected_points[0], color);
+
+		draw_line(framebuffer, &projected_points[4], &projected_points[5], color);
+		draw_line(framebuffer, &projected_points[5], &projected_points[6], color);
+		draw_line(framebuffer, &projected_points[6], &projected_points[7], color);
+		draw_line(framebuffer, &projected_points[7], &projected_points[4], color);
+
+		draw_line(framebuffer, &projected_points[0], &projected_points[4], color);
+		draw_line(framebuffer, &projected_points[5], &projected_points[1], color);
+		draw_line(framebuffer, &projected_points[6], &projected_points[2], color);
+		draw_line(framebuffer, &projected_points[7], &projected_points[3], color);
 	}
 }
 
-impl Triangle
+impl triangle
 {
-	pub fn New() -> Triangle
+	pub fn new() -> triangle
 	{
-		Triangle {
+		triangle {
 			points: [
-				Vec2D{x: 10.0f32, y: -5.0f32},
-				Vec2D{x: 0.0f32, y: 5.0f32},
-				Vec2D{x: -10.0f32, y: -5.0f32}
+				vec2f{x: 10.0f32, y: -5.0f32},
+				vec2f{x: 0.0f32, y: 5.0f32},
+				vec2f{x: -10.0f32, y: -5.0f32}
 			]
 		}
 	}
@@ -98,20 +124,16 @@ impl Triangle
 	// get the triangle points, sort them, translate them to the center of the coordinate system
 	pub fn Draw(&self, framebuffer: &mut [u8], color: u8)
 	{
-		let mut points = self.Get_Sorted_Verts();
+		let mut points = self.get_sorted_verts();
 
-		// draw_line(framebuffer, &points[0], &points[1], colors::WHITE as u8);
-		// draw_line(framebuffer, &points[1], &points[2], colors::RED as u8);
-		// draw_line(framebuffer, &points[0], &points[2], colors::GREEN as u8);
-
-		self.Rasterize(framebuffer, &points[1], &points[0], &points[2], color);
-		self.Rasterize(framebuffer, &points[1], &points[2], &points[0], color);
+		self.rasterize(framebuffer, &points[1], &points[0], &points[2], color);
+		self.rasterize(framebuffer, &points[1], &points[2], &points[0], color);
 	}
 
 	// tip is a common point between the two lines 
-	fn Rasterize(&self, framebuffer: &mut [u8], origin: &Vec2D, tip: &Vec2D, end: &Vec2D, color: u8)
+	fn rasterize(&self, framebuffer: &mut [u8], origin: &vec2f, tip: &vec2f, end: &vec2f, color: u8)
 	{
-		let mut points: [Vec2D; 2] = [
+		let mut points: [vec2f; 2] = [
 			origin - tip,
 			end - tip
 		];
@@ -146,24 +168,24 @@ impl Triangle
 		}
 	}
 
-	fn Get_Sorted_Verts(&self) -> [Vec2D; 3]
+	fn get_sorted_verts(&self) -> [vec2f; 3]
 	{
-		let mut points: [Vec2D; 3] = [
+		let mut points: [vec2f; 3] = [
 			self.points[0],
 			self.points[1],
 			self.points[2]
 		];
 
-		Compare_Swap_Verts(&mut points, 0, 1);
-		Compare_Swap_Verts(&mut points, 1, 2);
-		Compare_Swap_Verts(&mut points, 0, 1);
+		compare_swap_verts(&mut points, 0, 1);
+		compare_swap_verts(&mut points, 1, 2);
+		compare_swap_verts(&mut points, 0, 1);
 
 		points
 	}
 
-	pub fn Rotate(&self, degrees: f32) -> Triangle
+	pub fn rotate(&self, degrees: f32) -> triangle
 	{
-		Triangle{
+		triangle{
 			points: [
 				self.points[0].rotate(degrees),
 				self.points[1].rotate(degrees),
@@ -172,31 +194,31 @@ impl Triangle
 		}
 	}
 
-	pub fn Translate(&self, t: Vec2D) -> Triangle
+	pub fn translate(&self, t: vec2f) -> triangle
 	{
-		Triangle{
+		triangle{
 			points: [
-				Vec2D{x: self.points[0].x + t.x, y: self.points[0].y + t.y},
-				Vec2D{x: self.points[1].x + t.x, y: self.points[1].y + t.y},
-				Vec2D{x: self.points[2].x + t.x, y: self.points[2].y + t.y}
+				vec2f{x: self.points[0].x + t.x, y: self.points[0].y + t.y},
+				vec2f{x: self.points[1].x + t.x, y: self.points[1].y + t.y},
+				vec2f{x: self.points[2].x + t.x, y: self.points[2].y + t.y}
 			]
 		}
 	}
 
-	pub fn Scale(&self, factor: f32) -> Triangle
+	pub fn scale(&self, factor: f32) -> triangle
 	{
-		Triangle{
+		triangle{
 			points: [
-				Vec2D{x: self.points[0].x * factor, y: self.points[0].y * factor},
-				Vec2D{x: self.points[1].x * factor, y: self.points[1].y * factor},
-				Vec2D{x: self.points[2].x * factor, y: self.points[2].y * factor}
+				vec2f{x: self.points[0].x * factor, y: self.points[0].y * factor},
+				vec2f{x: self.points[1].x * factor, y: self.points[1].y * factor},
+				vec2f{x: self.points[2].x * factor, y: self.points[2].y * factor}
 			]
 		}
 	}
 }
 
 // sort by y, v1 should have higher y value
-fn Compare_Swap_Verts(points: &mut [Vec2D; 3], v1: usize, v2: usize)
+fn compare_swap_verts(points: &mut [vec2f; 3], v1: usize, v2: usize)
 {
 	if points[v1].y < points[v2].y
 	{
