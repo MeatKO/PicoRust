@@ -112,8 +112,8 @@ fn main() -> !
 	world_to_camera_mat.data[3][1] = 0.0f32; // Y translation
 	world_to_camera_mat.data[3][2] = -40.0f32; // Z translation
 
-	// let mut toggled: bool = false;
-	// let mut enable_rotation: bool = true;
+	let mut toggled: bool = false;
+	let mut render_wireframe: bool = false;
 
 	#[allow(clippy::empty_loop)]
 	loop
@@ -136,7 +136,15 @@ fn main() -> !
 		let mvp_matrix = projection_mat * &(world_to_camera_mat * &((rot_matrix_z * &rot_matrix_y) * &rot_matrix_x));
 
 		let new_cube = cube.scale(10.0f32);
-		new_cube.rasterize_wireframe(&mut framebuffer, &mvp_matrix, colors::WHITE as u8);
+
+		if render_wireframe
+		{
+			new_cube.rasterize_wireframe(&mut framebuffer, &mvp_matrix, colors::WHITE as u8);
+		}
+		else 
+		{
+			new_cube.rasterize(&mut framebuffer, &mvp_matrix, colors::WHITE as u8);
+		}
 
 		// take user input
 		if input_a.is_low().unwrap() 
@@ -150,6 +158,20 @@ fn main() -> !
 		if input_y.is_low().unwrap() 
 		{
 			degrees_z += 0.05f32;
+		}
+
+		if input_b.is_low().unwrap() 
+		{
+			toggled = true;
+		}
+		else
+		{
+			if toggled
+			{
+				render_wireframe = !render_wireframe;
+			}
+
+			toggled = false;
 		}
 	}
 }

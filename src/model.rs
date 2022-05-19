@@ -106,6 +106,35 @@ impl cube
 		draw_line(framebuffer, &projected_points[6], &projected_points[2], color);
 		draw_line(framebuffer, &projected_points[7], &projected_points[3], color);
 	}
+
+	pub fn rasterize(&self, framebuffer: &mut [u8], mvp_matrix: &mat4x4, color: u8)
+	{
+		let projected_points = self.project(mvp_matrix);
+
+		// right
+		triangle::from(&projected_points[0], &projected_points[1], &projected_points[5]).draw(framebuffer, color);
+		triangle::from(&projected_points[0], &projected_points[5], &projected_points[4]).draw(framebuffer, color);
+
+		// back
+		triangle::from(&projected_points[0], &projected_points[1], &projected_points[2]).draw(framebuffer, color);
+		triangle::from(&projected_points[0], &projected_points[3], &projected_points[2]).draw(framebuffer, color);
+
+		// left
+		triangle::from(&projected_points[2], &projected_points[3], &projected_points[7]).draw(framebuffer, color);
+		triangle::from(&projected_points[2], &projected_points[6], &projected_points[7]).draw(framebuffer, color);
+
+		// front
+		triangle::from(&projected_points[6], &projected_points[5], &projected_points[4]).draw(framebuffer, color);
+		triangle::from(&projected_points[6], &projected_points[4], &projected_points[7]).draw(framebuffer, color);
+
+		// top
+		triangle::from(&projected_points[1], &projected_points[3], &projected_points[4]).draw(framebuffer, color);
+		triangle::from(&projected_points[3], &projected_points[4], &projected_points[7]).draw(framebuffer, color);
+
+		// top
+		triangle::from(&projected_points[1], &projected_points[2], &projected_points[5]).draw(framebuffer, color);
+		triangle::from(&projected_points[2], &projected_points[5], &projected_points[6]).draw(framebuffer, color);
+	}
 }
 
 impl triangle
@@ -121,8 +150,19 @@ impl triangle
 		}
 	}
 
+	pub fn from(p1: &vec2f, p2: &vec2f, p3: &vec2f) -> triangle
+	{
+		triangle {
+			points: [
+				vec2f{x: p1.x, y: p1.y},
+				vec2f{x: p2.x, y: p2.y},
+				vec2f{x: p3.x, y: p3.y},
+			]
+		}
+	}
+
 	// get the triangle points, sort them, translate them to the center of the coordinate system
-	pub fn Draw(&self, framebuffer: &mut [u8], color: u8)
+	pub fn draw(&self, framebuffer: &mut [u8], color: u8)
 	{
 		let mut points = self.get_sorted_verts();
 
