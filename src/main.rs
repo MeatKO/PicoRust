@@ -15,7 +15,7 @@ use panic_halt as _;
 use rp2040_hal as hal;
 use hal::clocks::Clock;
 use hal::pac;
-use embedded_hal::digital::v2::OutputPin;
+use embedded_hal::digital::v2::{OutputPin,InputPin};
 use embedded_time::rate::*;
 use embedded_time::fixed_point::FixedPoint;
 use display_interface_spi::SPIInterfaceNoCS;
@@ -70,12 +70,18 @@ fn main() -> !
 	let _spi_chip_select = pins.gpio17.into_push_pull_output();
 	let spi = hal::Spi::<_, _, 8>::new(pac.SPI0).init(&mut pac.RESETS, clocks.peripheral_clock.freq(), 62_500_000u32.Hz(), &embedded_hal::spi::MODE_2);
 
-	// init pins
+	// init output pins
 	let mut led_pin = pins.gpio25.into_push_pull_output();
 	let mut r_pin = pins.gpio6.into_push_pull_output();
 	let mut g_pin = pins.gpio7.into_push_pull_output();
 	let mut b_pin = pins.gpio8.into_push_pull_output();
 	let mut reset_pin = pins.gpio20.into_push_pull_output();
+
+	// init input pins
+	let input_a = pins.gpio12.into_pull_up_input();
+	let input_b = pins.gpio13.into_pull_up_input();
+	let input_x = pins.gpio14.into_pull_up_input();
+	let input_y = pins.gpio15.into_pull_up_input();
 
 	// turn off LEDs (set_high actually turns them off)
 	r_pin.set_high().unwrap();
@@ -89,7 +95,9 @@ fn main() -> !
 	// mesh & matrix init
 	let cube = model::cube::new();
 
-	let mut degrees: f32 = 0f32;
+	let mut degrees_x: f32 = 0f32;
+	let mut degrees_y: f32 = 0f32;
+	let mut degrees_z: f32 = 0f32;
 
 	// 3D projection matrix vars
 	let fov = 90.0f32; // Field of view
@@ -103,6 +111,9 @@ fn main() -> !
 	world_to_camera_mat.data[3][0] = 0.0f32; // X translation
 	world_to_camera_mat.data[3][1] = 0.0f32; // Y translation
 	world_to_camera_mat.data[3][2] = -40.0f32; // Z translation
+
+	// let mut toggled: bool = false;
+	// let mut enable_rotation: bool = true;
 
 	#[allow(clippy::empty_loop)]
 	loop
@@ -118,21 +129,27 @@ fn main() -> !
 		print_text(&mut framebuffer, b"3D", vec2f{x: 30.0f32, y: 30.0f32}, 25.0f32, colors::WHITE as u8);
 		print_text(&mut framebuffer, b"CUBE", vec2f{x: 30.0f32, y: 25.0f32 + 30.0f32}, 25.0f32, colors::WHITE as u8);
 
-		let rot_matrix_x = mat4x4::new_rot_x(degrees * 3.0f32);
-		let rot_matrix_y = mat4x4::new_rot_y(degrees * 3.0f32);
-		let rot_matrix_z = mat4x4::new_rot_z(degrees * 3.0f32);
+		let rot_matrix_x = mat4x4::new_rot_x(degrees_x);
+		let rot_matrix_y = mat4x4::new_rot_y(degrees_y);
+		let rot_matrix_z = mat4x4::new_rot_z(degrees_z);
 
 		let mvp_matrix = projection_mat * &(world_to_camera_mat * &((rot_matrix_z * &rot_matrix_y) * &rot_matrix_x));
 
 		let new_cube = cube.scale(10.0f32);
 		new_cube.rasterize_wireframe(&mut framebuffer, &mvp_matrix, colors::WHITE as u8);
 
-		// misc.
-		if degrees >= 360f32
+		// take user input
+		if input_a.is_low().unwrap() 
 		{
-			degrees = 0f32;
+			degrees_x += 0.05f32;
 		}
-
-		degrees += 0.025f32;
+		if input_x.is_low().unwrap() 
+		{
+			degrees_y += 0.05f32;
+		}
+		if input_y.is_low().unwrap() 
+		{
+			degrees_z += 0.05f32;
+		}
 	}
 }
