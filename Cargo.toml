@@ -5,9 +5,6 @@ edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
-#[env]
-#rp-hal_path = "/home/gate/Documents/Programming/Embedded/rp-hal/rp-hal"
-
 [dependencies]
 cortex-m = "0.7.2"
 cortex-m-rt = ">=0.6.15,<0.8"
@@ -19,8 +16,8 @@ nb = "1.0"
 rp2040-pac = "0.3.0"
 paste = "1.0"
 pio = "0.2.0"
-rp2040-hal = { path = "/home/gate/Documents/Programming/Embedded/rp-hal/rp-hal/rp2040-hal" }
-rp2040-hal-macros = { version = "0.1.0", path = "/home/gate/Documents/Programming/Embedded/rp-hal/rp-hal/rp2040-hal-macros" }
+rp2040-hal = "0.4.0"
+rp2040-hal-macros = "0.1.0"
 usb-device = "0.2.8"
 vcell = "0.1"
 void = { version = "1.0.2", default-features = false }
@@ -42,18 +39,3 @@ cortex-m-rt = "0.7"
 hd44780-driver = "0.4.0"
 pio-proc = "0.2.0"
 dht-sensor = "0.2.1"
-
-#rp2040-hal = { path = "/home/gate/Documents/Programming/Embedded/rp-hal/rp-hal/rp2040-hal" }
-#rp2040-hal-macros = { path = "/home/gate/Documents/Programming/Embedded/rp-hal/rp-hal/rp2040-hal-macros" }
-#adafruit-feather-rp2040 = { path = "/home/gate/Documents/Programming/Embedded/rp-hal/rp-hal/boards/adafruit-feather-rp2040" }
-#adafruit-itsy-bitsy-rp2040 = { path = "/home/gate/Documents/Programming/Embedded/rp-hal/rp-hal/boards/adafruit-itsy-bitsy-rp2040" }
-#adafruit-kb2040 = { path = "/home/gate/Documents/Programming/Embedded/rp-hal/rp-hal/boards/adafruit-kb2040" }
-#adafruit-macropad = { path = "/home/gate/Documents/Programming/Embedded/rp-hal/rp-hal/boards/adafruit-macropad" }
-#adafruit-qt-py-rp2040 = { path = "/home/gate/Documents/Programming/Embedded/rp-hal/rp-hal/boards/adafruit-qt-py-rp2040" }
-#adafruit-trinkey-qt2040 = { path = "/home/gate/Documents/Programming/Embedded/rp-hal/rp-hal/boards/adafruit-trinkey-qt2040" }
-#pimoroni-pico-explorer = { path = "/home/gate/Documents/Programming/Embedded/rp-hal/rp-hal/boards/pimoroni-pico-explorer" }
-#pimoroni-pico-lipo-16mb = { path = "/home/gate/Documents/Programming/Embedded/rp-hal/rp-hal/boards/pimoroni-pico-lipo-16mb" }
-#pimoroni-tiny2040 = { path = "/home/gate/Documents/Programming/Embedded/rp-hal/rp-hal/boards/pimoroni-tiny2040" }
-#rp-pico = { path = "/home/gate/Documents/Programming/Embedded/rp-hal/rp-hal/boards/rp-pico" }
-#solderparty-rp2040-stamp = { path = "/home/gate/Documents/Programming/Embedded/rp-hal/rp-hal/boards/solderparty-rp2040-stamp" }
-#sparkfun-pro-micro-rp2040 = { path = "/home/gate/Documents/Programming/Embedded/rp-hal/rp-hal/boards/sparkfun-pro-micro-rp2040" }
